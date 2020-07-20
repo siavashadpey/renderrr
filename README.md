@@ -10,4 +10,5 @@ To compile the code, run the following commands:
 mkdir build
 cd build
 cmake ..
+make
 ```
