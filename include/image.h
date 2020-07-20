@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "cuda_header.cuh"
 #include "color.h"
 
 class Image {
@@ -11,11 +12,11 @@ public:
 
     ~Image();
 
-    void set_pixel(int, int, Color);
-    Color pixel(int, int) const;
+    CUDA_CALLABLE void set_pixel(int, int, Color);
+    CUDA_CALLABLE Color* pixel(int, int) const;
 
-    void dimensions(int&, int&) const;
-    Point pixel_location(int, int) const;
+    CUDA_CALLABLE void dimensions(int&, int&) const;
+    CUDA_CALLABLE Point pixel_location(int, int) const;
 
     int write_ppm(const char*) const;
 
@@ -24,7 +25,7 @@ protected:
     int width_;
     double dx_;
     double dy_;
-    std::vector<std::vector<Color> > pixels_;
+    Color** pixels_; 
 
 };
 

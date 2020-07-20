@@ -9,12 +9,12 @@ Light::Light(Point location, Color color)
 Light::~Light()
 {}
 
-Point Light::location() const
+CUDA_CALLABLE Point Light::location() const
 {
 	return location_;
 }
 
-Color Light::color() const
+CUDA_CALLABLE Color Light::color() const
 {
 	return color_;
 }

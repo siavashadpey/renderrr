@@ -4,7 +4,7 @@
 #include "ray.h"
 
 
-Ray::Ray(Point origin, Vector3d<double> direction)
+CUDA_CALLABLE Ray::Ray(Point origin, Vector3d<double> direction)
 {
 
 	assert(abs(direction.magnitude() - 1.) < 1E-5);
@@ -12,15 +12,15 @@ Ray::Ray(Point origin, Vector3d<double> direction)
 	direction_ = direction;
 }
 
-Ray::~Ray()
+CUDA_CALLABLE Ray::~Ray()
 {}
 
-Point Ray::origin() const
+CUDA_CALLABLE Point Ray::origin() const
 {
 	return origin_;
 }
 
-Vector3d<double> Ray::direction() const
+CUDA_CALLABLE Vector3d<double> Ray::direction() const
 {
 	return direction_;
 }

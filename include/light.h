@@ -1,6 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+#include "cuda_header.cuh"
 #include "vector.h"
 #include "color.h"
 
@@ -8,8 +9,8 @@ class Light {
 public:
 	Light(Point, Color);
 	~Light();
-	Point location() const;
-	Color color() const;
+	CUDA_CALLABLE Point location() const;
+	CUDA_CALLABLE Color color() const;
 
 protected:
 	Point location_;

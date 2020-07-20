@@ -12,27 +12,27 @@ Material::Material(Color base_color, double diffuse_coeff, double specular_coeff
 Material::~Material()
 {}
 
-Color Material::base_color() const
+CUDA_CALLABLE Color Material::base_color() const
 {
 	return base_color_;
 }
 
-double Material::diffuse_coefficient() const
+CUDA_CALLABLE double Material::diffuse_coefficient() const
 {
 	return diffuse_coeff_;
 }
 
-double Material::specular_coefficient() const
+CUDA_CALLABLE double Material::specular_coefficient() const
 {
 	return specular_coeff_;
 }
 
-double Material::ambient_intensity() const
+CUDA_CALLABLE double Material::ambient_intensity() const
 {
 	return ambient_intensity_;
 }
 
-double Material::reflection_intensity() const
+CUDA_CALLABLE double Material::reflection_intensity() const
 {
 	return reflection_intensity_;
 }

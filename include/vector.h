@@ -3,26 +3,28 @@
 
 #include <stdlib.h>
 
+#include "cuda_header.cuh"
+
 template<typename Number>
 class Vector3d {
 public:
-    Vector3d(Number , Number , Number );
-    Vector3d();
+    CUDA_CALLABLE Vector3d(Number , Number , Number );
+    CUDA_CALLABLE Vector3d();
 
-    ~Vector3d();
+    CUDA_CALLABLE ~Vector3d();
 
-    Number* values() const;
-    Number magnitude() const;
-    void normalize();
-    Vector3d<Number> direction_to(const Vector3d<Number>&) const;
-    Number dot(const Vector3d<Number>&) const;
+    CUDA_CALLABLE Number* values() const;
+    CUDA_CALLABLE Number magnitude() const;
+    CUDA_CALLABLE void normalize();
+    CUDA_CALLABLE Vector3d<Number> direction_to(const Vector3d<Number>&) const;
+    CUDA_CALLABLE Number dot(const Vector3d<Number>&) const;
 
-    Vector3d<Number>& operator=(const Vector3d<Number>&);
-    Vector3d<Number>& operator+=(const Vector3d<Number>&);
-    Vector3d<Number> operator-() const;
-    Vector3d<Number> operator+(const Vector3d<Number>&) const;
-    Vector3d<Number> operator-(const Vector3d<Number>&) const;
-    Vector3d<Number> operator*(const double&) const;
+    CUDA_CALLABLE Vector3d<Number>& operator=(const Vector3d<Number>&);
+    CUDA_CALLABLE Vector3d<Number>& operator+=(const Vector3d<Number>&);
+    CUDA_CALLABLE Vector3d<Number> operator-() const;
+    CUDA_CALLABLE Vector3d<Number> operator+(const Vector3d<Number>&) const;
+    CUDA_CALLABLE Vector3d<Number> operator-(const Vector3d<Number>&) const;
+    CUDA_CALLABLE Vector3d<Number> operator*(const double&) const;
 
 protected:
 	Number* vec_ = (Number*) malloc(3*sizeof(Number));

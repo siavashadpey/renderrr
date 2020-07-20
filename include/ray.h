@@ -1,15 +1,16 @@
 #ifndef RAY_H
 #define RAY_H
 
+#include "cuda_header.cuh"
 #include "vector.h"
 
 class Ray {
 public:
-	Ray(Point , Vector3d<double> );
-	~Ray();
+	CUDA_CALLABLE Ray(Point , Vector3d<double> );
+	CUDA_CALLABLE ~Ray();
 
-	Point origin() const;
-	Vector3d<double> direction() const;
+	CUDA_CALLABLE Point origin() const;
+	CUDA_CALLABLE Vector3d<double> direction() const;
 
 protected:
 	Point origin_;

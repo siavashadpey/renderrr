@@ -12,37 +12,37 @@ Sphere::Sphere(double radius, Material* mat)
 Sphere::~Sphere()
 {}
 
-double Sphere::radius() const
+CUDA_CALLABLE double Sphere::radius() const
 {
 	return radius_;
 }
 
-Color Sphere::base_color() const
+CUDA_CALLABLE Color Sphere::base_color() const
 {
 	return material_->base_color();
 }
 
-double Sphere::diffuse_coefficient() const
+CUDA_CALLABLE double Sphere::diffuse_coefficient() const
 {
 	return material_->diffuse_coefficient();
 }
 
-double Sphere::specular_coefficient() const
+CUDA_CALLABLE double Sphere::specular_coefficient() const
 {
 	return material_->specular_coefficient();
 }
 
-double Sphere::ambient_intensity() const
+CUDA_CALLABLE double Sphere::ambient_intensity() const
 {
 	return material_->ambient_intensity();
 }
 
-double Sphere::reflection_intensity() const
+CUDA_CALLABLE double Sphere::reflection_intensity() const
 {
 	return material_->reflection_intensity();
 }
 
-double Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const
+CUDA_CALLABLE double Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const
 {
 	double dist = INFINITY;
 

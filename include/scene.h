@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "cuda_header.cuh"
 #include "vector.h"
 #include "object.h"
 #include "image.h"
@@ -18,15 +19,15 @@ public:
 	void add_light(Light*);
 
 	// member interface
-	Image* image() const;
-	Point pixel_location(int, int) const;
-	Point camera_location() const;
-	int n_objects() const;
-	int n_lights() const;
-	Light* light(int) const;
+	CUDA_CALLABLE Image* image() const;
+	CUDA_CALLABLE Point pixel_location(int, int) const;
+	CUDA_CALLABLE Point camera_location() const;
+	CUDA_CALLABLE int n_objects() const;
+	CUDA_CALLABLE int n_lights() const;
+	CUDA_CALLABLE Light* light(int) const;
 
 	// helper methods
-	Sphere* object_hit(const Ray&, Point&, Vector3d<double>&) const;
+	CUDA_CALLABLE Sphere* object_hit(const Ray&, Point&, Vector3d<double>&) const;
 
 protected:
 	Point camera_location_;

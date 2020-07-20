@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "cuda_header.cuh"
 #include "scene.h"
 #include "object.h"
 #include "ray.h"
@@ -13,15 +14,12 @@ public:
 
 protected:
 	Scene* scene_;
-	int emitted_ray_counter_ = 0; // this might cause issues when parallelizing
 	const int max_rays_ = 50;
 
-	Color trace_ray_(const Ray&);
-	bool is_hit_(const Sphere*) const;
-	void color_at_(const Sphere*, const Point&, const Vector3d<double>&, Color&) const;
-	void set_pixel_color_(int, int, Color);
-	void increment_emitted_ray_counter_();
-	void reset_emitted_ray_counter_();
+	CUDA_CALLABLE Color trace_ray_(const Ray&, int emitted_ray_counter = 1);
+	CUDA_CALLABLE bool is_hit_(const Sphere*) const;
+	CUDA_CALLABLE void color_at_(const Sphere*, const Point&, const Vector3d<double>&, Color&) const;
+	CUDA_CALLABLE void set_pixel_color_(int, int, Color);
 };
 
 #endif

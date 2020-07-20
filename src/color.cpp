@@ -3,16 +3,16 @@
 #include "vector.h"
 #include "color.h"
 
-Color::Color(double r, double g, double b)
+CUDA_CALLABLE Color::Color(double r, double g, double b)
 	: Vector3d<double>(r, g, b)
 {
 }
 
-Color::~Color() 
+CUDA_CALLABLE Color::~Color() 
 {
 }
 
-double* Color::RGB() const
+CUDA_CALLABLE double* Color::RGB() const
 {
 	return this->values();
 }

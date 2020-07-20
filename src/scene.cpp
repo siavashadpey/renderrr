@@ -35,12 +35,12 @@ void Scene::add_light(Light *light)
 	lights_.push_back(light);
 }
 
-Image* Scene::image() const 
+CUDA_CALLABLE Image* Scene::image() const 
 {
 	return image_;
 }
 
-Point Scene::pixel_location(int irow, int jcol) const
+CUDA_CALLABLE Point Scene::pixel_location(int irow, int jcol) const
 {
 	// Image is a unit square
 	// We need to get the pixel's relative location
@@ -55,32 +55,33 @@ Point Scene::pixel_location(int irow, int jcol) const
 	return image_bl_location_ + p;
 }
 
-Point Scene::camera_location() const
+CUDA_CALLABLE Point Scene::camera_location() const
 {
 	return camera_location_;
 }
 
-int Scene::n_objects() const
+CUDA_CALLABLE int Scene::n_objects() const
 {
 	return objects_.size();
 }
 
-int Scene::n_lights() const
+CUDA_CALLABLE int Scene::n_lights() const
 {
 	return lights_.size();
 }
 
-Light* Scene::light(int i) const
+CUDA_CALLABLE Light* Scene::light(int i) const
 {
 	return lights_[i];
 }
 
-Sphere* Scene::object_hit(const Ray& ray,  Point& hit_location, Vector3d<double>& normal_hit_dir) const
+CUDA_CALLABLE Sphere* Scene::object_hit(const Ray& ray,  Point& hit_location, Vector3d<double>& normal_hit_dir) const
 {
 	Sphere* closest_obj_hit = nullptr;
 	double min_dist = INFINITY;
 
-	for (unsigned int i = 0; i < objects_.size(); i++) {
+	const int n = objects_.size();
+	for (int i = 0; i < n; i++) {
 		Point location;
 		double dist = objects_[i]->hit_distance(*object_locations_[i], ray, location);
 		if (dist < min_dist) {
