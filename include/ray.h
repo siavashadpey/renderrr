@@ -6,15 +6,15 @@
 
 class Ray {
 public:
-	CUDA_CALLABLE Ray(Point , Vector3d<double> );
+	CUDA_CALLABLE Ray(Point , Vector3d<float>);
 	CUDA_CALLABLE ~Ray();
 
 	CUDA_CALLABLE Point origin() const;
-	CUDA_CALLABLE Vector3d<double> direction() const;
+	CUDA_CALLABLE Vector3d<float> direction() const;
 
 protected:
 	Point origin_;
-	Vector3d<double> direction_;
+	Vector3d<float> direction_;
 };
 
 #endif

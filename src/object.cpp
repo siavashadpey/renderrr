@@ -3,7 +3,7 @@
 #include "object.h"
 
 
-Sphere::Sphere(double radius, Material* mat)
+Sphere::Sphere(float radius, Material* mat)
 	: 	radius_(radius)
 {
 	material_ = mat;
@@ -12,7 +12,7 @@ Sphere::Sphere(double radius, Material* mat)
 Sphere::~Sphere()
 {}
 
-CUDA_CALLABLE double Sphere::radius() const
+CUDA_CALLABLE float Sphere::radius() const
 {
 	return radius_;
 }
@@ -22,42 +22,42 @@ CUDA_CALLABLE Color Sphere::base_color() const
 	return material_->base_color();
 }
 
-CUDA_CALLABLE double Sphere::diffuse_coefficient() const
+CUDA_CALLABLE float Sphere::diffuse_coefficient() const
 {
 	return material_->diffuse_coefficient();
 }
 
-CUDA_CALLABLE double Sphere::specular_coefficient() const
+CUDA_CALLABLE float Sphere::specular_coefficient() const
 {
 	return material_->specular_coefficient();
 }
 
-CUDA_CALLABLE double Sphere::ambient_intensity() const
+CUDA_CALLABLE float Sphere::ambient_intensity() const
 {
 	return material_->ambient_intensity();
 }
 
-CUDA_CALLABLE double Sphere::reflection_intensity() const
+CUDA_CALLABLE float Sphere::reflection_intensity() const
 {
 	return material_->reflection_intensity();
 }
 
-CUDA_CALLABLE double Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const
+CUDA_CALLABLE float Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const
 {
-	double dist = INFINITY;
+	float dist = INFINITY;
 
-	const Vector3d<double> camera_to_center = ray.origin() - center; 
-	const Vector3d<double> ray_dir = ray.direction();
-	const double a = 1.;// ray_dir.dot(ray_dir) = 1
-	const double b = 2.0*ray_dir.dot(camera_to_center);
-	const double c = camera_to_center.dot(camera_to_center) - radius_*radius_;
+	const Vector3d<float> camera_to_center = ray.origin() - center; 
+	const Vector3d<float> ray_dir = ray.direction();
+	const float a = 1.f;// ray_dir.dot(ray_dir) = 1
+	const float b = 2.0f*ray_dir.dot(camera_to_center);
+	const float c = camera_to_center.dot(camera_to_center) - radius_*radius_;
 
-	const double disc = b*b - 4.0*a*c;
-	if (disc >= 0)
+	const float disc = b*b - 4.0f*a*c;
+	if (disc >= 0.f)
 	{
-		double t = (-b - sqrt(disc))/(2.0*a);
+		float t = (-b - sqrtf(disc))/(2.0f*a);
 		// Positive t means object is in front of camera
-		if (t > 0) { 
+		if (t > 0.f) { 
 			hit_location = ray.direction()*t + ray.origin();
 			dist = t;
 		}

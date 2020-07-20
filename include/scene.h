@@ -27,14 +27,14 @@ public:
 	CUDA_CALLABLE Light* light(int) const;
 
 	// helper methods
-	CUDA_CALLABLE Sphere* object_hit(const Ray&, Point&, Vector3d<double>&) const;
+	CUDA_CALLABLE Sphere* object_hit(const Ray&, Point&, Vector3d<float>&) const;
 
 protected:
 	Point camera_location_;
 
 	Image* image_;
 	Point image_bl_location_; // Image's bottom left corner location
-	double image_dims_[2];
+	float image_dims_[2];
 
 	std::vector<Sphere *> objects_;
 	std::vector<Point* > object_locations_;

@@ -12,8 +12,8 @@ Image::Image(int height, int width)
     for (int i = 0; i < height_; i++) {
     	pixels_[i] = new Color[width_];
     }
-    dx_ = 1./(width_ - 1.);
-    dy_ = 1./(height_ - 1.);
+    dx_ = 1.f/(width_ - 1.f);
+    dy_ = 1.f/(height_ - 1.f);
 }
 
 Image::~Image()
@@ -42,9 +42,9 @@ CUDA_CALLABLE void Image::dimensions(int& nrow, int &ncol) const
 
 CUDA_CALLABLE Point Image::pixel_location(int irow, int jcol) const
 {
-	double x = (double) jcol*dx_;
-	double y = (double) irow*dy_;
-	return Point(x, y, 0.0);
+	float x = (float) jcol*dx_;
+	float y = (float) irow*dy_;
+	return Point(x, y, 0.0f);
 }
 
 
@@ -59,10 +59,10 @@ int Image::write_ppm(const char *fname) const
 	for (int i = 0; i < height_; i++) {
 		for (int j = 0; j < width_; j++)
 		{
-			double* rgb_ij = pixel(i,j)->RGB();
+			float* rgb_ij = pixel(i,j)->RGB();
 			#pragma unroll
 			for (int k = 0; k < 3; k++) {
-				fprintf(fptr, "%d ", (int)round(fmax(fmin(rgb_ij[k] * 255, 255), 0)));
+				fprintf(fptr, "%d ", (int)round(fmax(fmin(rgb_ij[k] * 255, 255), 0.f)));
 			}
 		}
 		// 1 line per row

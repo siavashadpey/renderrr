@@ -116,7 +116,7 @@ CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator-(const Vector3d<Number
 }
 
 template<typename Number>
-CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator*(const double& c) const
+CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator*(const float& c) const
 {
 	Number* val = (Number*) malloc(3*sizeof(Number));
 
@@ -127,5 +127,5 @@ CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator*(const double& c) cons
 	return Vector3d<Number>(val[0], val[1], val[2]);
 } 
 
-template class Vector3d<double>;
+template class Vector3d<float>;
 template class Vector3d<int>;

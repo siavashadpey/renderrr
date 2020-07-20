@@ -24,13 +24,13 @@ public:
     CUDA_CALLABLE Vector3d<Number> operator-() const;
     CUDA_CALLABLE Vector3d<Number> operator+(const Vector3d<Number>&) const;
     CUDA_CALLABLE Vector3d<Number> operator-(const Vector3d<Number>&) const;
-    CUDA_CALLABLE Vector3d<Number> operator*(const double&) const;
+    CUDA_CALLABLE Vector3d<Number> operator*(const float&) const;
 
 protected:
 	Number* vec_ = (Number*) malloc(3*sizeof(Number));
 
 };
 
-using Point = Vector3d<double>;
+using Point = Vector3d<float>;
 
 #endif

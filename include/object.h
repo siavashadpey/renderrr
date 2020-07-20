@@ -9,19 +9,19 @@
 
 class Sphere {
 public:
-	Sphere(double, Material*);
+	Sphere(float, Material*);
 	~Sphere();
 	CUDA_CALLABLE Color base_color() const;
-	CUDA_CALLABLE double radius() const;
-	CUDA_CALLABLE double diffuse_coefficient() const;
-	CUDA_CALLABLE double specular_coefficient() const;
-	CUDA_CALLABLE double ambient_intensity() const;
-	CUDA_CALLABLE double reflection_intensity() const;
+	CUDA_CALLABLE float radius() const;
+	CUDA_CALLABLE float diffuse_coefficient() const;
+	CUDA_CALLABLE float specular_coefficient() const;
+	CUDA_CALLABLE float ambient_intensity() const;
+	CUDA_CALLABLE float reflection_intensity() const;
 
-	CUDA_CALLABLE double hit_distance(const Point, const Ray&, Point&) const;
+	CUDA_CALLABLE float hit_distance(const Point, const Ray&, Point&) const;
 
 protected:
-	double radius_;
+	float radius_;
 	Material* material_;
 };
 

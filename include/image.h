@@ -23,8 +23,8 @@ public:
 protected:
 	int height_;
     int width_;
-    double dx_;
-    double dy_;
+    float dx_;
+    float dy_;
     Color** pixels_; 
 
 };

@@ -18,7 +18,7 @@ protected:
 
 	CUDA_CALLABLE Color trace_ray_(const Ray&, int emitted_ray_counter = 1);
 	CUDA_CALLABLE bool is_hit_(const Sphere*) const;
-	CUDA_CALLABLE void color_at_(const Sphere*, const Point&, const Vector3d<double>&, Color&) const;
+	CUDA_CALLABLE void color_at_(const Sphere*, const Point&, const Vector3d<float>&, Color&) const;
 	CUDA_CALLABLE void set_pixel_color_(int, int, Color);
 };
 

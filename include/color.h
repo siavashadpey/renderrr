@@ -5,13 +5,13 @@
 #include "vector.h"
 
 
-class Color: public Vector3d<double> {
+class Color: public Vector3d<float> {
 public:
-    CUDA_CALLABLE Color(double r=0., double g=0., double b=0.);
+    CUDA_CALLABLE Color(float r=0.f, float g=0.f, float b=0.f);
 
     CUDA_CALLABLE ~Color();
 
-    CUDA_CALLABLE double* RGB() const;
+    CUDA_CALLABLE float* RGB() const;
 
 };
 
