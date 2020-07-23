@@ -11,6 +11,7 @@ public:
 
 	CUDA_CALLABLE Point origin() const;
 	CUDA_CALLABLE Vector3d<float> direction() const;
+	CUDA_CALLABLE Ray& operator=(const Ray&);
 
 protected:
 	Point origin_;

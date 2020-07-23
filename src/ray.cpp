@@ -24,3 +24,10 @@ CUDA_CALLABLE Vector3d<float> Ray::direction() const
 {
 	return direction_;
 }
+
+CUDA_CALLABLE Ray& Ray::operator=(const Ray& other_ray)
+{
+	origin_ = other_ray.origin();
+	direction_ = other_ray.direction();
+	return *this;
+}

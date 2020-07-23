@@ -55,6 +55,7 @@ int Image::write_ppm(const char *fname) const
 		for (int j = 0; j < width_; j++)
 		{
 			Color color = pixel(i,j);
+			#pragma unroll (3)
 			for (int k = 0; k < 3; k++) {
 				fprintf(fptr, "%d ", (int)round(fmax(fmin(color[k] * 255, 255), 0.f)));
 			}

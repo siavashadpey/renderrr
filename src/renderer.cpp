@@ -11,7 +11,7 @@ __global__ void set_pixel_color_kernel(Renderer* renderer, int nrow, int ncol) {
 	if ((i < nrow) and (j < ncol)) {
 		Point pixel_loc = renderer->scene()->pixel_location(i, j);
 		Vector3d<float> dir = cl.direction_to(pixel_loc);
-		const Ray ray = Ray(cl, dir);
+		Ray ray = Ray(cl, dir);
 		Color color;
 		color = renderer->trace_ray(ray);
 		renderer->set_pixel_color(i, j, color);
@@ -100,13 +100,13 @@ void Renderer::render()
 	CUDA_CALL(cudaFree(d_lights));
 
 #else
-	
+
 	Point cl = scene()->camera_location();
 	for (int i = 0; i < nrow; i++) {
 		for (int j = 0; j < ncol; j++) {
 			Point pixel_loc = scene()->pixel_location(i, j);
 			Vector3d<float> dir = cl.direction_to(pixel_loc);
-			const Ray ray = Ray(cl, dir);
+			Ray ray = Ray(cl, dir);
 			Color color;
 			color = trace_ray(ray);
 			set_pixel_color(i, j, color);
@@ -120,7 +120,7 @@ CUDA_CALLABLE Scene* Renderer::scene() const
 	return scene_;
 }
 
-CUDA_CALLABLE Color Renderer::trace_ray(const Ray &ray)
+CUDA_CALLABLE Color Renderer::trace_ray(Ray &ray)
 {
 	//Point hit_location;
 	//Vector3d<float> hit_normal_dir;
@@ -130,17 +130,17 @@ CUDA_CALLABLE Color Renderer::trace_ray(const Ray &ray)
 	//Color color;
 	//if (is_hit) {
 	//	color_at_(obj, hit_location, hit_normal_dir, color);
-//
 	//	// trace ray reflected off of object
-	//	if (emitted_ray_counter < max_rays_) {
+	//	if (iray < max_rays_) {
 	//		Point new_position = hit_location + hit_normal_dir*0.0001f;
 	//		Vector3d<float> new_dir = ray.direction() - hit_normal_dir*hit_normal_dir.dot(ray.direction())*2.f;
 	//		new_dir.normalize();
 	//		Ray reflected_ray = Ray(new_position, new_dir); 
-	//		color += trace_ray(reflected_ray, emitted_ray_counter+1);//*obj.reflection_intensity();
+	//		color += trace_ray(reflected_ray, iray+1)*obj.reflection_intensity();
 	//	}
 	//}
 	//return color;
+
 	Color tot_color;
 	float reflection_intensity = 1.0f;
 	for (int iray = 0; iray < max_rays_; iray++) {
@@ -151,15 +151,17 @@ CUDA_CALLABLE Color Renderer::trace_ray(const Ray &ray)
 		Sphere obj = scene()->object_hit(ray, hit_location, hit_normal_dir, is_hit);
 		if (is_hit) {
 			color_at_(obj, hit_location, hit_normal_dir, color);
-	
+			tot_color += color*reflection_intensity;
+			reflection_intensity *= obj.reflection_intensity();
 			// trace ray reflected off of object
 			Point new_position = hit_location + hit_normal_dir*0.0001f;
 			Vector3d<float> new_dir = ray.direction() - hit_normal_dir*hit_normal_dir.dot(ray.direction())*2.f;
 			new_dir.normalize();
-			Ray reflected_ray = Ray(new_position, new_dir); 
+			ray = Ray(new_position, new_dir);
 			//color += trace_ray(reflected_ray, emitted_ray_counter+1)*obj.reflection_intensity();
-			tot_color += color*reflection_intensity;
-			reflection_intensity *= 0.5f;
+		}
+		else {
+			return tot_color;
 		}
 	}
 	return tot_color;
