@@ -42,7 +42,6 @@ CUDA_CALLABLE Point Image::pixel_location(int irow, int jcol) const
 	return Point(x, y, 0.0f);
 }
 
-
 int Image::write_ppm(const char *fname) const
 {
 	FILE *fptr;
@@ -66,3 +65,21 @@ int Image::write_ppm(const char *fname) const
 	fclose(fptr);
 	return 0; // success
 }
+
+#ifdef __CUDACC__
+__host__ void Image::cuda_malloc_memcpy_pointer_members(Image* d_image) {
+
+	CUDA_CALL(cudaMalloc((void**)&(d_pixels_), height_*width_*sizeof(Color)));
+	// no need to copy pixels_ to d_pixels_ since the pixels are what we're going to compute on the GPU
+
+	CUDA_CALL(cudaMemcpy(&(d_image->pixels_), &d_pixels_, sizeof(Color*), cudaMemcpyHostToDevice));
+}
+
+__host__ void Image::cuda_memcpy_output() {
+	 CUDA_CALL(cudaMemcpy(pixels_, d_pixels_, height_*width_*sizeof(Color), cudaMemcpyDeviceToHost));
+}
+
+__host__ void Image::cuda_free_pointer_members() {
+	 CUDA_CALL(cudaFree(d_pixels_));
+}
+#endif

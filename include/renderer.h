@@ -22,6 +22,14 @@ protected:
 	const int max_rays_ = 50;
 
 	CUDA_CALLABLE void color_at_(const Sphere&, const Point&, const Vector3d<float>&, Color&) const;
+
+#ifdef __CUDACC__
+	Scene* d_scene_;
+	__host__ void cuda_malloc_memcpy_pointer_members_(Renderer*);
+	__host__ void cuda_memcpy_output_();
+	__host__ void cuda_free_pointer_members_();
+#endif
+
 };
 
 #endif

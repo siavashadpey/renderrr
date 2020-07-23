@@ -110,3 +110,40 @@ CUDA_CALLABLE Sphere Scene::object_hit(const Ray& ray,  Point& hit_location, Vec
 	}
 	return closest_obj_hit;
 }
+
+#ifdef __CUDACC__
+__host__ void Scene::cuda_malloc_memcpy_pointer_members(Scene* d_scene) {
+
+	CUDA_CALL(cudaMalloc((void**) &d_image_, sizeof(Image)));
+	CUDA_CALL(cudaMemcpy(d_image_, image_, sizeof(Image), cudaMemcpyHostToDevice));
+
+	CUDA_CALL(cudaMalloc((void**) &d_object_locations_, n_objects_*sizeof(Point)));
+	CUDA_CALL(cudaMemcpy(d_object_locations_, object_locations_, n_objects_*sizeof(Point), cudaMemcpyHostToDevice));
+
+	CUDA_CALL(cudaMalloc((void**) &d_objects_, n_objects_*sizeof(Sphere)));
+	CUDA_CALL(cudaMemcpy(d_objects_, objects_, n_objects_*sizeof(Sphere), cudaMemcpyHostToDevice));
+
+	CUDA_CALL(cudaMalloc((void**) &d_lights_, n_lights_*sizeof(Light)));
+	CUDA_CALL(cudaMemcpy(d_lights_, lights_, n_lights_*sizeof(Light), cudaMemcpyHostToDevice));
+
+	image_->cuda_malloc_memcpy_pointer_members(d_image_);
+
+	CUDA_CALL(cudaMemcpy(&(d_scene->image_), &d_image_, sizeof(Image*), cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(&(d_scene->object_locations_), &d_object_locations_, sizeof(Point*), cudaMemcpyHostToDevice)); 
+	CUDA_CALL(cudaMemcpy(&(d_scene->objects_), &d_objects_, sizeof(Sphere*), cudaMemcpyHostToDevice)); 
+	CUDA_CALL(cudaMemcpy(&(d_scene->lights_), &d_lights_, sizeof(Light*), cudaMemcpyHostToDevice));
+}
+
+__host__ void Scene::cuda_memcpy_output() {
+	image_->cuda_memcpy_output();
+}
+
+__host__ void Scene::cuda_free_pointer_members() {
+	CUDA_CALL(cudaFree(d_image_));
+	CUDA_CALL(cudaFree(d_object_locations_));
+	CUDA_CALL(cudaFree(d_objects_));
+	CUDA_CALL(cudaFree(d_lights_));
+	image_->cuda_free_pointer_members();
+}
+
+#endif

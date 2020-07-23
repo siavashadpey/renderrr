@@ -18,13 +18,25 @@ public:
     CUDA_CALLABLE void dimensions(int&, int&) const;
     CUDA_CALLABLE Point pixel_location(int, int) const;
 
+#ifdef __CUDACC__
+    __host__ void cuda_malloc_memcpy_pointer_members(Image*);
+    __host__ void cuda_memcpy_output();
+    __host__ void cuda_free_pointer_members();
+#endif
+
     int write_ppm(const char*) const;
-    Color* pixels_;
+
 protected:
+    Color* pixels_;
+
 	int height_;
     int width_;
     float dx_;
     float dy_;
+
+#ifdef __CUDACC__
+    Color* d_pixels_;
+#endif
 };
 
 #endif

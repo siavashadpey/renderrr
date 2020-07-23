@@ -36,48 +36,16 @@ void Renderer::render()
 
 #ifdef __CUDACC__
 
-	// cudaMalloc and cudaMemcpy
+	// allocate global memory and copy objects
 	Renderer* d_renderer;
 	CUDA_CALL(cudaMalloc((void**) &d_renderer, sizeof(Renderer) ));
 	CUDA_CALL(cudaMemcpy(d_renderer, this, sizeof(Renderer), cudaMemcpyHostToDevice));
 
 	// cudaMalloc & cudaMemcpy does not copy pointer data members of class objects
 	// so we need to cudaMalloc & cudaMemcpy those explicitly
-	// class Renderer has a data member of type scene*
-	Scene* d_scene;
-	CUDA_CALL(cudaMalloc((void**) &d_scene, sizeof(Scene)));
-	CUDA_CALL(cudaMemcpy(d_scene, scene(), sizeof(Scene), cudaMemcpyHostToDevice ));
-	// class Scene has a data member of type Image*
-	Image* d_image;
-	CUDA_CALL(cudaMalloc((void**) &d_image, sizeof(Image)));
-	CUDA_CALL(cudaMemcpy(d_image, scene_->image_, sizeof(Image), cudaMemcpyHostToDevice));
-	
-	// class Image has a data member of type Color* and length nrow*ncol
-	// this is the output, so no need to memcpy from host to device
-	Color* d_pixels;
-	CUDA_CALL(cudaMalloc((void**)&(d_pixels), nrow*ncol*sizeof(Color)));
-	// class Scene has a data member of type Point* and length scene()->n_objects()
-	Point* d_object_locations;
-	CUDA_CALL(cudaMalloc((void**) &d_object_locations, scene_->n_objects()*sizeof(Point)));
-	CUDA_CALL(cudaMemcpy(d_object_locations, scene_->object_locations_, scene_->n_objects()*sizeof(Point), cudaMemcpyHostToDevice));
-
-	// class Scene has a data member of type Sphere* and length scene()->n_objects()
-	Sphere* d_objects;
-	CUDA_CALL(cudaMalloc((void**) &d_objects, scene_->n_objects()*sizeof(Sphere)));
-	CUDA_CALL(cudaMemcpy(d_objects, scene_->objects_, scene_->n_objects()*sizeof(Sphere), cudaMemcpyHostToDevice));
-
-	// class Scene has a data member of type Light* and length scene()->n_lights()
-	Light* d_lights;
-	CUDA_CALL(cudaMalloc((void**) &d_lights, scene_->n_lights()*sizeof(Light)));
-	CUDA_CALL(cudaMemcpy(d_lights, scene_->lights_, scene_->n_lights()*sizeof(Light), cudaMemcpyHostToDevice));
-	// Now, overwrite the addresses of the pointer data members that were not explicitly handled
-	// by cudaMalloc and cudaMemcpy as the addresses of the objects we just created
-	CUDA_CALL(cudaMemcpy(&(d_renderer->scene_), &d_scene, sizeof(Scene*), cudaMemcpyHostToDevice ));
-	CUDA_CALL(cudaMemcpy(&(d_scene->image_), &d_image, sizeof(Image*), cudaMemcpyHostToDevice));
-	CUDA_CALL(cudaMemcpy(&(d_image->pixels_), &d_pixels, sizeof(Color*), cudaMemcpyHostToDevice));
-	CUDA_CALL(cudaMemcpy(&(d_scene->object_locations_), &d_object_locations, sizeof(Point*), cudaMemcpyHostToDevice)); 
-	CUDA_CALL(cudaMemcpy(&(d_scene->objects_), &d_objects, sizeof(Sphere*), cudaMemcpyHostToDevice)); 
-	CUDA_CALL(cudaMemcpy(&(d_scene->lights_), &d_lights, sizeof(Light*), cudaMemcpyHostToDevice));
+	// and repeat the process for pointer data members that
+	// have pointer data members
+	cuda_malloc_memcpy_pointer_members_(d_renderer);
 
 	// setup grid
 	dim3 block(NTHREADS, NTHREADS);
@@ -88,17 +56,12 @@ void Renderer::render()
 	CUDA_CALL( cudaPeekAtLastError());
 	CUDA_CALL( cudaDeviceSynchronize());
 
-	// cudaMemcpy
-	CUDA_CALL(cudaMemcpy(scene_->image_->pixels_, d_pixels, nrow*ncol*sizeof(Color), cudaMemcpyDeviceToHost));
+	// copy output
+	cuda_memcpy_output_();
 
-	// cudaFree
+	// free device memory
 	CUDA_CALL(cudaFree(d_renderer));
-	CUDA_CALL(cudaFree(d_scene));
-	CUDA_CALL(cudaFree(d_image));
-	CUDA_CALL(cudaFree(d_pixels));
-	CUDA_CALL(cudaFree(d_objects));
-	CUDA_CALL(cudaFree(d_object_locations));
-	CUDA_CALL(cudaFree(d_lights));
+	cuda_free_pointer_members_();
 
 #else
 
@@ -198,3 +161,24 @@ CUDA_CALLABLE int Renderer::max_rays() const
 {
 	return max_rays_;
 }
+
+#ifdef __CUDACC__
+__host__ void Renderer::cuda_malloc_memcpy_pointer_members_(Renderer* d_renderer) {
+	CUDA_CALL(cudaMalloc((void**) &d_scene_, sizeof(Scene)));
+	CUDA_CALL(cudaMemcpy(d_scene_, scene_, sizeof(Scene), cudaMemcpyHostToDevice ));
+
+	scene_->cuda_malloc_memcpy_pointer_members(d_scene_);
+
+	//  overwrite the addresses of the pointer's data members that were not explicitly handle
+	CUDA_CALL(cudaMemcpy(&(d_renderer->scene_), &d_scene_, sizeof(Scene*), cudaMemcpyHostToDevice ));
+}
+
+__host__ void Renderer::cuda_memcpy_output_() {
+	scene_->cuda_memcpy_output();
+}
+
+__host__ void Renderer::cuda_free_pointer_members_() {
+	CUDA_CALL(cudaFree(d_scene_));
+	scene_->cuda_free_pointer_members();
+}
+#endif
