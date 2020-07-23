@@ -7,7 +7,7 @@
 CUDA_CALLABLE Ray::Ray(Point origin, Vector3d<float> direction)
 {
 
-	assert(abs(direction.magnitude() - 1.f) < .00001f);
+	//assert(abs(direction.magnitude() - 1.f) < .00001f);
 	origin_ = origin;
 	direction_ = direction;
 }

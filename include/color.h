@@ -1,5 +1,5 @@
-#ifndef COLOR
-#define COLOR
+#ifndef COLOR_H
+#define COLOR_H
 
 #include "cuda_header.cuh"
 #include "vector.h"
@@ -11,7 +11,9 @@ public:
 
     CUDA_CALLABLE ~Color();
 
-    CUDA_CALLABLE float* RGB() const;
+    CUDA_CALLABLE float red() const;
+    CUDA_CALLABLE float green() const;
+    CUDA_CALLABLE float blue() const;
 
 };
 

@@ -12,8 +12,20 @@ CUDA_CALLABLE Color::~Color()
 {
 }
 
-CUDA_CALLABLE float* Color::RGB() const
+CUDA_CALLABLE float Color::red() const
 {
-	return this->values();
+	return this->vec_[0];
 }
+
+CUDA_CALLABLE float Color::green() const
+{
+	return this->vec_[1];
+}
+
+
+CUDA_CALLABLE float Color::blue() const
+{
+	return this->vec_[2];
+}
+
 

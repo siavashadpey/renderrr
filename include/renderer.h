@@ -11,15 +11,23 @@ public:
 	Renderer(Scene*);
 	~Renderer();
 	void render();
+	CUDA_CALLABLE Scene* scene() const;
+	CUDA_CALLABLE Color trace_ray(const Ray&);
+	CUDA_CALLABLE void set_pixel_color(int, int, Color);
+	CUDA_CALLABLE int max_rays() const;
 
 protected:
 	Scene* scene_;
-	const int max_rays_ = 50;
+	
+	const int max_rays_ = 10;
 
-	CUDA_CALLABLE Color trace_ray_(const Ray&, int emitted_ray_counter = 1);
-	CUDA_CALLABLE bool is_hit_(const Sphere*) const;
-	CUDA_CALLABLE void color_at_(const Sphere*, const Point&, const Vector3d<float>&, Color&) const;
-	CUDA_CALLABLE void set_pixel_color_(int, int, Color);
+	CUDA_CALLABLE void color_at_(const Sphere&, const Point&, const Vector3d<float>&, Color&) const;
 };
 
+#endif
+
+#ifdef __CUDACC__
+__global__ void set_pixel_color_kernel(Renderer*, int, int);
+
+#define NTHREADS 16
 #endif

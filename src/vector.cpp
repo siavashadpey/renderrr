@@ -20,26 +20,20 @@ template<typename Number>
 CUDA_CALLABLE Vector3d<Number>::~Vector3d() {
 }
 
-template<typename Number>
-CUDA_CALLABLE Number* Vector3d<Number>::values() const {
-    return vec_;
-}
 
 // useful mathematical functions
 template<typename Number>
 CUDA_CALLABLE Number Vector3d<Number>::magnitude() const {
-	Number mag = (Number) 0.0;
-	#pragma unroll
+	Number mag = (Number) 0.0f;
 	for (int i = 0; i < 3; i++) {
 		mag += vec_[i]*vec_[i];
 	}
-	return sqrt(mag);
+	return sqrtf(mag);
 }
 
 template<typename Number>
 CUDA_CALLABLE void Vector3d<Number>::normalize() {
 	Number mag = magnitude();
-	#pragma unroll
 	for (int i = 0; i < 3; i++) {
 		vec_[i] /=mag;
 	}
@@ -57,9 +51,8 @@ template<typename Number>
 CUDA_CALLABLE Number Vector3d<Number>::dot(const Vector3d<Number>& other_v) const
 {
 	Number val = (Number) 0.0;
-	#pragma unroll
 	for (int i = 0; i < 3; i++) {
-		val += this->vec_[i]*other_v.values()[i];
+		val += this->vec_[i]*other_v.vec_[i];
 	}
 	return val;
 }
@@ -68,23 +61,25 @@ CUDA_CALLABLE Number Vector3d<Number>::dot(const Vector3d<Number>& other_v) cons
 template<typename Number>
 CUDA_CALLABLE Vector3d<Number>& Vector3d<Number>::operator=(const Vector3d<Number>& other_v)
 {
-	vec_ = other_v.vec_;
+	for (int i = 0; i < 3; i++) {
+		vec_[i] = other_v.vec_[i];
+	}
 	return *this;
 }
 
 template<typename Number>
 CUDA_CALLABLE Vector3d<Number>& Vector3d<Number>::operator+=(const Vector3d<Number>& other_v)
 {
-	vec_ = (*this + other_v).values();
+	for (int i = 0; i < 3; i++) {
+		vec_[i] += other_v.vec_[i];
+	}	
 	return *this;
 }
 
 template<typename Number>
 CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator-() const
 {
-	Number* val = (Number*) malloc(3*sizeof(Number));
-
-	#pragma unroll
+	Number val[3];
 	for (int i = 0; i < 3; i++) {
 		val[i] = -this->vec_[i];
 	}
@@ -92,13 +87,16 @@ CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator-() const
 }
 
 template<typename Number>
+CUDA_CALLABLE Number& Vector3d<Number>::operator[](int i) {
+    return vec_[i];
+}
+
+template<typename Number>
 CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator+(const Vector3d<Number>& other_v) const 
 {
-	Number* val = (Number*) malloc(3*sizeof(Number));
-
-	#pragma unroll
+	Number val[3];
 	for (int i = 0; i < 3; i++) {
-		val[i] = this->vec_[i] + other_v.values()[i];
+		val[i] = this->vec_[i] + other_v.vec_[i];
 	}
 	return Vector3d<Number>(val[0], val[1], val[2]);
 }
@@ -106,11 +104,9 @@ CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator+(const Vector3d<Number
 template<typename Number>
 CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator-(const Vector3d<Number>& other_v) const 
 {
-	Number* val = (Number*) malloc(3*sizeof(Number));
-
-	#pragma unroll
+	Number val[3];
 	for (int i = 0; i < 3; i++) {
-		val[i] = this->vec_[i] - other_v.values()[i];
+		val[i] = this->vec_[i] - other_v.vec_[i];
 	}
 	return Vector3d<Number>(val[0], val[1], val[2]);
 }
@@ -118,9 +114,7 @@ CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator-(const Vector3d<Number
 template<typename Number>
 CUDA_CALLABLE Vector3d<Number> Vector3d<Number>::operator*(const float& c) const
 {
-	Number* val = (Number*) malloc(3*sizeof(Number));
-
-	#pragma unroll
+	Number val[3];
 	for (int i = 0; i < 3; i++) {
 		val[i] = c*this->vec_[i];
 	}

@@ -1,4 +1,10 @@
 include_directories(${project_include})
 
-add_executable(main main.cpp)
-target_link_libraries(main ${lib_name})
+if (CUDA_ENABLED)
+    set_source_files_properties(main.cpp PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ)
+    cuda_add_executable(main main.cpp)
+    target_link_libraries(main ${lib_name} ${CUDA_LIBRARIES} ${CUDA_CUDART_LIBRARY})
+else()
+    add_executable(main main.cpp)
+    target_link_libraries(main ${lib_name})
+endif()

@@ -9,7 +9,10 @@ Material::Material(Color base_color, float diffuse_coeff, float specular_coeff, 
 	base_color_ = base_color;
 }
 
-Material::~Material()
+CUDA_CALLABLE Material::Material()
+{}
+
+CUDA_CALLABLE Material::~Material()
 {}
 
 CUDA_CALLABLE Color Material::base_color() const

@@ -3,13 +3,16 @@
 #include "object.h"
 
 
-Sphere::Sphere(float radius, Material* mat)
+Sphere::Sphere(float radius, Material mat)
 	: 	radius_(radius)
 {
 	material_ = mat;
 }
 
-Sphere::~Sphere()
+CUDA_CALLABLE Sphere::Sphere()
+{}
+
+CUDA_CALLABLE Sphere::~Sphere()
 {}
 
 CUDA_CALLABLE float Sphere::radius() const
@@ -19,27 +22,27 @@ CUDA_CALLABLE float Sphere::radius() const
 
 CUDA_CALLABLE Color Sphere::base_color() const
 {
-	return material_->base_color();
+	return material_.base_color();
 }
 
 CUDA_CALLABLE float Sphere::diffuse_coefficient() const
 {
-	return material_->diffuse_coefficient();
+	return material_.diffuse_coefficient();
 }
 
 CUDA_CALLABLE float Sphere::specular_coefficient() const
 {
-	return material_->specular_coefficient();
+	return material_.specular_coefficient();
 }
 
 CUDA_CALLABLE float Sphere::ambient_intensity() const
 {
-	return material_->ambient_intensity();
+	return material_.ambient_intensity();
 }
 
 CUDA_CALLABLE float Sphere::reflection_intensity() const
 {
-	return material_->reflection_intensity();
+	return material_.reflection_intensity();
 }
 
 CUDA_CALLABLE float Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const

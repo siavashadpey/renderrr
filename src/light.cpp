@@ -6,7 +6,10 @@ Light::Light(Point location, Color color)
 	color_ = color;	
 }
 
-Light::~Light()
+CUDA_CALLABLE Light::Light()
+{}
+
+CUDA_CALLABLE Light::~Light()
 {}
 
 CUDA_CALLABLE Point Light::location() const

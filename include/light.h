@@ -8,7 +8,8 @@
 class Light {
 public:
 	Light(Point, Color);
-	~Light();
+	CUDA_CALLABLE Light();
+	CUDA_CALLABLE ~Light();
 	CUDA_CALLABLE Point location() const;
 	CUDA_CALLABLE Color color() const;
 

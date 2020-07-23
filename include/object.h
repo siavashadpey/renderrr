@@ -9,8 +9,9 @@
 
 class Sphere {
 public:
-	Sphere(float, Material*);
-	~Sphere();
+	Sphere(float, Material);
+	CUDA_CALLABLE Sphere();
+	CUDA_CALLABLE ~Sphere();
 	CUDA_CALLABLE Color base_color() const;
 	CUDA_CALLABLE float radius() const;
 	CUDA_CALLABLE float diffuse_coefficient() const;
@@ -22,7 +23,7 @@ public:
 
 protected:
 	float radius_;
-	Material* material_;
+	Material material_;
 };
 
 #endif
