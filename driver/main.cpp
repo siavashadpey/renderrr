@@ -13,8 +13,7 @@ int main(int argc, char const *argv[])
 	(void) argv;
 
 	// instantiate scene
-	Point cam_location = Point(0.f, -0.35f, -1.f);//Point(1.2f, .6f, -.35f);
-	printf("%f %f %f\n", cam_location[0], cam_location[1], cam_location[2]);
+	Point cam_location = Point(0.f, -0.35f, -1.f);
 	Scene scene = Scene(cam_location, 3, 2);
 	// -y  ^ z
 	// ^  /

@@ -80,6 +80,7 @@ void Renderer::render()
 	CUDA_CALL(cudaMemcpy(&(d_scene->lights_), &d_lights, sizeof(Light*), cudaMemcpyHostToDevice));
 
 	// setup grid
+	dim3 block(NTHREADS, NTHREADS);
 	dim3 grid( (ncol + NTHREADS - 1)/NTHREADS, (nrow + NTHREADS - 1)/NTHREADS );
 
 	// launch kernel
