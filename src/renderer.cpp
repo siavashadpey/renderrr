@@ -53,8 +53,8 @@ void Renderer::render()
 
 	// launch kernel
 	set_pixel_color_kernel<<<grid, block>>>(d_renderer, nrow, ncol);
-	CUDA_CALL( cudaPeekAtLastError());
-	CUDA_CALL( cudaDeviceSynchronize());
+	//CUDA_CALL( cudaPeekAtLastError());
+	//CUDA_CALL( cudaDeviceSynchronize());
 
 	// copy output
 	cuda_memcpy_output_();

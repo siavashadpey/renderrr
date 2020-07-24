@@ -56,11 +56,11 @@ CUDA_CALLABLE float Sphere::hit_distance(const Point center, const Ray& ray, Poi
 	const float c = camera_to_center.dot(camera_to_center) - radius_*radius_;
 
 	const float disc = b*b - 4.0f*a*c;
-	if (disc >= 0.f)
+	if (disc > 0.f)
 	{
 		float t = (-b - sqrtf(disc))/(2.0f*a);
 		// Positive t means object is in front of camera
-		if (t > 0.f) { 
+		if (t > 0.0001f) { 
 			hit_location = ray.direction()*t + ray.origin();
 			dist = t;
 		}

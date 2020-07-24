@@ -105,9 +105,9 @@ CUDA_CALLABLE Sphere Scene::object_hit(const Ray& ray,  Point& hit_location, Vec
 			closest_obj_hit = objects_[i];
 			hit_location = location;
 			normal_hit_dir = location - object_locations_[i];
-			normal_hit_dir.normalize();
 		}
 	}
+	normal_hit_dir.normalize();
 	return closest_obj_hit;
 }
 

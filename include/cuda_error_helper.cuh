@@ -49,8 +49,6 @@
     }                                                                         \
 } while(0)
 
-
-
 // Note, it is required that your SDK sample to include the proper header files, please
 // refer the CUDA examples for examples of the needed CUDA headers, which may change depending
 // on which CUDA functions are used.
