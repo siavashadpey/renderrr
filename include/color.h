@@ -14,6 +14,7 @@ public:
     CUDA_CALLABLE float red() const;
     CUDA_CALLABLE float green() const;
     CUDA_CALLABLE float blue() const;
+    CUDA_CALLABLE Color& operator=(const Vector3d<float>&);
 
 };
 

@@ -31,6 +31,7 @@ public:
 
 	// helper methods
 	CUDA_CALLABLE Sphere object_hit(const Ray&, Point&, Vector3d<float>&, bool&) const;
+	CUDA_CALLABLE bool is_intercepted(const Point&, const Point&) const;
 
 #ifdef __CUDACC__
 	__host__ void cuda_malloc_memcpy_pointer_members(Scene*);

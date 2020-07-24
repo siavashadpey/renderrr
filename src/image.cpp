@@ -4,6 +4,10 @@
 
 #include "image.h"
 
+float random_pertubation() {
+	return rand() / (RAND_MAX + 1.f);
+}
+
 Image::Image(int height, int width) 
     : height_(height),
       width_(width)
@@ -20,8 +24,8 @@ Image::~Image()
 
 CUDA_CALLABLE void Image::set_pixel(int irow, int jcol, Color color)
 {
-	//printf("%d %d \n", irow, jcol);
-    pixels_[irow*width_ + jcol] = color;
+	Color gamma_corr_color = Color(sqrtf(color[0]), sqrtf(color[1]), sqrtf(color[2]));
+    pixels_[irow*width_ + jcol] = gamma_corr_color;
 }
 
 CUDA_CALLABLE Color Image::pixel(int irow, int jcol) const
@@ -37,8 +41,8 @@ CUDA_CALLABLE void Image::dimensions(int& nrow, int &ncol) const
 
 CUDA_CALLABLE Point Image::pixel_location(int irow, int jcol) const
 {
-	float x = (float) jcol*dx_;
-	float y = (float) irow*dy_;
+	float x = (float) (jcol + random_pertubation())*dx_;
+	float y = (float) (irow + random_pertubation())*dy_;
 	return Point(x, y, 0.0f);
 }
 
@@ -56,7 +60,7 @@ int Image::write_ppm(const char *fname) const
 			Color color = pixel(i,j);
 			#pragma unroll (3)
 			for (int k = 0; k < 3; k++) {
-				fprintf(fptr, "%d ", (int)round(fmax(fmin(color[k] * 255, 255), 0.f)));
+				fprintf(fptr, "%d ", static_cast<int> (fmax(fmin(color[k], .999), 0)*256));
 			}
 		}
 		// 1 line per row

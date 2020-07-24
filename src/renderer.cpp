@@ -3,17 +3,22 @@
 
 #include "renderer.h"
 
+#include "util.h"
+
 #ifdef __CUDACC__
 __global__ void set_pixel_color_kernel(Renderer* renderer, int nrow, int ncol) {
 	int i = blockDim.y*blockIdx.y + threadIdx.y;
 	int j = blockDim.x*blockIdx.x + threadIdx.x;
 	Point cl = renderer->scene()->camera_location();
 	if ((i < nrow) and (j < ncol)) {
-		Point pixel_loc = renderer->scene()->pixel_location(i, j);
-		Vector3d<float> dir = cl.direction_to(pixel_loc);
-		Ray ray = Ray(cl, dir);
 		Color color;
-		color = renderer->trace_ray(ray);
+		for (int iray = 0; iray < n_samples_; iray++) {
+			Point pixel_loc = renderer->scene()->pixel_location(i, j);
+			Vector3d<float> dir = cl.direction_to(pixel_loc);
+			Ray ray = Ray(cl, dir);
+			color += renderer->trace_ray(ray);
+		}
+		color = color*(1.f/n_samples_);
 		renderer->set_pixel_color(i, j, color);
 	}
 }
@@ -64,15 +69,17 @@ void Renderer::render()
 	cuda_free_pointer_members_();
 
 #else
-
 	Point cl = scene()->camera_location();
 	for (int i = 0; i < nrow; i++) {
 		for (int j = 0; j < ncol; j++) {
-			Point pixel_loc = scene()->pixel_location(i, j);
-			Vector3d<float> dir = cl.direction_to(pixel_loc);
-			Ray ray = Ray(cl, dir);
 			Color color;
-			color = trace_ray(ray);
+			for (int iray = 0; iray < n_samples_; iray++) {
+				Point pixel_loc = scene()->pixel_location(i, j);
+				Vector3d<float> dir = cl.direction_to(pixel_loc);
+				Ray ray = Ray(cl, dir);
+				color += trace_ray(ray);
+			}
+			color = color*(1.f/n_samples_);
 			set_pixel_color(i, j, color);
 		}
 	}
@@ -86,25 +93,6 @@ CUDA_CALLABLE Scene* Renderer::scene() const
 
 CUDA_CALLABLE Color Renderer::trace_ray(Ray &ray)
 {
-	//Point hit_location;
-	//Vector3d<float> hit_normal_dir;
-	//bool is_hit;
-	//Sphere obj = scene()->object_hit(ray, hit_location, hit_normal_dir, is_hit);
-//
-	//Color color;
-	//if (is_hit) {
-	//	color_at_(obj, hit_location, hit_normal_dir, color);
-	//	// trace ray reflected off of object
-	//	if (iray < max_rays_) {
-	//		Point new_position = hit_location + hit_normal_dir*0.0001f;
-	//		Vector3d<float> new_dir = ray.direction() - hit_normal_dir*hit_normal_dir.dot(ray.direction())*2.f;
-	//		new_dir.normalize();
-	//		Ray reflected_ray = Ray(new_position, new_dir); 
-	//		color += trace_ray(reflected_ray, iray+1)*obj.reflection_intensity();
-	//	}
-	//}
-	//return color;
-
 	Color tot_color;
 	float reflection_intensity = 1.0f;
 	for (int iray = 0; iray < max_rays_; iray++) {
@@ -116,19 +104,18 @@ CUDA_CALLABLE Color Renderer::trace_ray(Ray &ray)
 		if (is_hit) {
 			color_at_(obj, hit_location, hit_normal_dir, color);
 			tot_color += color*reflection_intensity;
+
+			reflect_ray_(obj, hit_location, hit_normal_dir, ray);
 			reflection_intensity *= obj.reflection_intensity();
-			// trace ray reflected off of object
-			Point new_position = hit_location + hit_normal_dir*0.0001f;
-			Vector3d<float> new_dir = ray.direction() - hit_normal_dir*hit_normal_dir.dot(ray.direction())*2.f;
-			new_dir.normalize();
-			ray = Ray(new_position, new_dir);
-			//color += trace_ray(reflected_ray, emitted_ray_counter+1)*obj.reflection_intensity();
 		}
 		else {
+			// sky
+			const float t = 0.5f*(-ray.direction()[1] + 1.0f);
+			tot_color += (Color(1.f,1.f,1.f)*(1.f-t) + Color(.5f,.7f,1.f)*t)*reflection_intensity;
 			return tot_color;
 		}
 	}
-	return tot_color;
+	return Color(0.,0.,0.); // will never reach here. included to silence compiler warning
 }
 
 
@@ -141,15 +128,36 @@ CUDA_CALLABLE void Renderer::color_at_(const Sphere& obj, const Point& hit_locat
 	for (int i = 0; i < scene()->n_lights(); i++) {
 		Light current_light = scene()->light(i);
 
-		// diffuse color - Lambert shading model
-		Point hit_to_light = hit_location.direction_to(current_light.location());
-		color += obj.base_color()*fmax(hit_to_light.dot(hit_normal_dir), 0.0f)*obj.diffuse_coefficient();
-		
-		// specular color - Phong shading model
-		Point R = hit_to_light + hit_to_cam;
-		R.normalize();
-		color += current_light.color()*obj.specular_coefficient()*pow(fmax(hit_normal_dir.dot(R), 0.0f), 50.f);
+		bool light_is_intercepted = scene()->is_intercepted(hit_location, current_light.location());
+		if (!light_is_intercepted) {
+			Vector3d<float> hit_to_light = hit_location.direction_to(current_light.location());
+			// diffuse color - Lambert shading model
+			color += obj.base_color()*fmax(hit_to_light.dot(hit_normal_dir), 0.0f)*obj.diffuse_coefficient();
+			
+			// specular color - Phong shading model
+			Point R = hit_to_light + hit_to_cam;
+			R.normalize();
+			color += current_light.color()*obj.specular_coefficient()*pow(fmax(hit_normal_dir.dot(R), 0.0f), 50.f);
+		}
 	}
+}
+
+CUDA_CALLABLE void Renderer::reflect_ray_(const Sphere& obj,  const Point& hit_location, const Vector3d<float>& hit_normal_dir, Ray& ray) const {
+	
+	// reflective objects reflect rays in a specific manner
+	// otherwise the reflection is semi-random
+	
+	if (obj.is_reflective()) {
+		Vector3d<float> new_dir = ray.direction() - hit_normal_dir*hit_normal_dir.dot(ray.direction())*2.f;
+		new_dir.normalize();
+		ray = Ray(hit_location, new_dir);
+	}
+	else {
+		Vector3d<float> new_dir = hit_normal_dir + random_point_on_unit_sphere();
+		new_dir.normalize();
+		ray = Ray(hit_location, new_dir);
+	}
+	
 }
 
 CUDA_CALLABLE void Renderer::set_pixel_color(int irow, int jcol, Color pixel_color)

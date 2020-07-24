@@ -6,7 +6,7 @@
 
 class Material {
 public:
-	Material(Color, float diffuse_coeff = 1.0f, float specular_coeff = 1.0f, float ambient_intensity = 0.05f, float reflection_intensity = 0.5f);
+	Material(Color, float diffuse_coeff = 1.0f, float specular_coeff = 1.0f, float ambient_intensity = 1.f, float reflection_intensity = 0.5f, bool is_reflective = true);
 	CUDA_CALLABLE Material();
 	CUDA_CALLABLE ~Material();
 	CUDA_CALLABLE Color base_color() const;
@@ -14,6 +14,7 @@ public:
 	CUDA_CALLABLE float specular_coefficient() const;
 	CUDA_CALLABLE float ambient_intensity() const;
 	CUDA_CALLABLE float reflection_intensity() const;
+	CUDA_CALLABLE bool is_reflective() const;
 
 protected:
 	Color base_color_;
@@ -21,6 +22,7 @@ protected:
 	float specular_coeff_;
 	float ambient_intensity_;
 	float reflection_intensity_;
+	bool is_reflective_;
 };
 
 

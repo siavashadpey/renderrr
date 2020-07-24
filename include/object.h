@@ -18,6 +18,7 @@ public:
 	CUDA_CALLABLE float specular_coefficient() const;
 	CUDA_CALLABLE float ambient_intensity() const;
 	CUDA_CALLABLE float reflection_intensity() const;
+	CUDA_CALLABLE bool is_reflective() const;
 
 	CUDA_CALLABLE float hit_distance(const Point, const Ray&, Point&) const;
 

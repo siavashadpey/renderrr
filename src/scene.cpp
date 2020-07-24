@@ -20,8 +20,8 @@ Scene::Scene(Point camera_location, int n_objects, int n_lights)
 
 	// we align center of image with camera
 	// image is at z=1 relative to camera
-	image_dims_[0] = 2.f;
-	image_dims_[1] = image_dims_[0]/ar;
+	image_dims_[1] = 2.f;
+	image_dims_[0] = image_dims_[1]*ar;
 	float image_z = +1.f;
 	image_bl_location_ = camera_location_ + Point(-image_dims_[0]/2.f, -image_dims_[1]/2.f, image_z);
 
@@ -109,6 +109,19 @@ CUDA_CALLABLE Sphere Scene::object_hit(const Ray& ray,  Point& hit_location, Vec
 	}
 	normal_hit_dir.normalize();
 	return closest_obj_hit;
+}
+
+CUDA_CALLABLE bool Scene::is_intercepted(const Point& origin, const Point& dest) const {
+	const float length = (origin - dest).magnitude();
+	Ray ray = Ray(origin, origin.direction_to(dest));
+	for (int i = 0; i < n_objects_; i++) {
+		Point location;
+		float dist = objects_[i].hit_distance(object_locations_[i], ray, location);
+		if (dist < length) {
+			return true;
+		}
+	}
+	return false;
 }
 
 #ifdef __CUDACC__

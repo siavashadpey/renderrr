@@ -45,6 +45,12 @@ CUDA_CALLABLE float Sphere::reflection_intensity() const
 	return material_.reflection_intensity();
 }
 
+
+CUDA_CALLABLE bool Sphere::is_reflective() const
+{
+	return material_.is_reflective();
+}
+
 CUDA_CALLABLE float Sphere::hit_distance(const Point center, const Ray& ray, Point& hit_location) const
 {
 	float dist = INFINITY;
@@ -59,8 +65,11 @@ CUDA_CALLABLE float Sphere::hit_distance(const Point center, const Ray& ray, Poi
 	if (disc > 0.f)
 	{
 		float t = (-b - sqrtf(disc))/(2.0f*a);
-		// Positive t means object is in front of camera
-		if (t > 0.0001f) { 
+		// negative t means object is in opposite direction of ray
+		if (t < 0.001f) { // try other root
+			t = (-b + sqrtf(disc))/(2.0f*a);
+		}
+		if (t > 0.001f) { 
 			hit_location = ray.direction()*t + ray.origin();
 			dist = t;
 		}

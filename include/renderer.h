@@ -20,9 +20,10 @@ protected:
 	Scene* scene_;
 	
 	const int max_rays_ = 50;
+	const int n_samples_ = 100;
 
 	CUDA_CALLABLE void color_at_(const Sphere&, const Point&, const Vector3d<float>&, Color&) const;
-
+	CUDA_CALLABLE void reflect_ray_(const Sphere&,  const Point&, const Vector3d<float>&, Ray&) const;
 #ifdef __CUDACC__
 	Scene* d_scene_;
 	__host__ void cuda_malloc_memcpy_pointer_members_(Renderer*);
