@@ -28,7 +28,7 @@ cmake ..
 make
 ```
 
-Finally, run the code from `build_parallel` `build_serial` to generate the ppm file:
+Finally, run the code from `build_parallel` (or `build_serial`) to generate the ppm file:
 ```console
 ./driver/three_balls
 ```
