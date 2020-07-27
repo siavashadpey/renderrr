@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cassert>
 #include <math.h>
 
 #include "scene.h"
@@ -14,7 +15,7 @@ Scene::Scene(Point camera_location, int n_objects, int n_lights)
 	camera_location_ = camera_location;
 
 	float ar = 16.f/9.f; // aspect ration = width/height
-	int height = 1000;
+	int height = 400;
 	int width = (int)(height*ar);
 	image_ = new Image(height, width);
 
@@ -40,6 +41,7 @@ Scene::~Scene()
 
 void Scene::add_object(Sphere obj, Point obj_loc)
 {
+	assert(i_object_ < n_objects_);
 	objects_[i_object_] = obj;
 	object_locations_[i_object_] = obj_loc;
 	i_object_++;
@@ -47,6 +49,7 @@ void Scene::add_object(Sphere obj, Point obj_loc)
 
 void Scene::add_light(Light light)
 {
+	assert(i_light_ < n_lights_);
 	lights_[i_light_] = light;
 	i_light_++;
 }
@@ -122,6 +125,13 @@ CUDA_CALLABLE bool Scene::is_intercepted(const Point& origin, const Point& dest)
 		}
 	}
 	return false;
+}
+
+CUDA_CALLABLE Color Scene::sky_color(const Ray& ray) const {
+	const float t = 0.5f*(-ray.direction()[1] + 1.0f);
+	Color c;
+	c = (Color(1.f,1.f,1.f)*(1.f-t) + Color(.5f,.7f,1.f)*t)*1.f;
+	return c;
 }
 
 #ifdef __CUDACC__

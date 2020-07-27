@@ -110,12 +110,11 @@ CUDA_CALLABLE Color Renderer::trace_ray(Ray &ray)
 		}
 		else {
 			// sky
-			const float t = 0.5f*(-ray.direction()[1] + 1.0f);
-			tot_color += (Color(1.f,1.f,1.f)*(1.f-t) + Color(.5f,.7f,1.f)*t)*reflection_intensity;
+			tot_color += scene()->sky_color(ray)*reflection_intensity;
 			return tot_color;
 		}
 	}
-	return Color(0.,0.,0.); // will never reach here. included to silence compiler warning
+	return Color(0.f,0.f,0.f); // will never reach here. included to silence compiler warning
 }
 
 

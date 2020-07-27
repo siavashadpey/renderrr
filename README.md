@@ -1,6 +1,9 @@
 # renderrr
 A GPU implementation of a simple ray tracer. Some of the ray tracing features are from [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html#rays,asimplecamera,andbackground/sendingraysintothescene) and some are from [Building a Ray Tracer in Python](https://www.youtube.com/watch?v=KaCe63v4D_Q).
 
+![](three_balls.png)
+
+![](many_balls.png)
 
 ## Running the code
 
@@ -29,6 +32,7 @@ make
 ```
 
 Finally, run the code from `build_parallel` (or `build_serial`) to generate the ppm file:
+
 ```console
 ./driver/three_balls
 ```

@@ -1,11 +1,11 @@
 #include "material.h"
 
-Material::Material(Color base_color, float diffuse_coeff, float specular_coeff, float ambient_intensity, float reflection_intensity, bool is_reflective)
-	:	diffuse_coeff_(diffuse_coeff),
+Material::Material(Color base_color, bool is_reflective, float diffuse_coeff, float specular_coeff, float ambient_intensity, float reflection_intensity)
+	:   is_reflective_(is_reflective),
+		diffuse_coeff_(diffuse_coeff),
 		specular_coeff_(specular_coeff),
 		ambient_intensity_(ambient_intensity),
-		reflection_intensity_(reflection_intensity),
-		is_reflective_(is_reflective)
+		reflection_intensity_(reflection_intensity)
 {
 	base_color_ = base_color;
 }
