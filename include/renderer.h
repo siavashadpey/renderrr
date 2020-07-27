@@ -15,6 +15,7 @@ public:
 	CUDA_CALLABLE Color trace_ray(Ray&);
 	CUDA_CALLABLE void set_pixel_color(int, int, Color);
 	CUDA_CALLABLE int max_rays() const;
+	CUDA_CALLABLE int n_samples() const;
 
 protected:
 	Scene* scene_;

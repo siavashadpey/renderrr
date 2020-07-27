@@ -10,18 +10,20 @@ if (CUDA_ENABLED)
     set_source_files_properties(scene.cpp    PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ) 
     set_source_files_properties(renderer.cpp PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ) 
     set_source_files_properties(light.cpp    PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ)
+    set_source_files_properties(util.cpp     PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ)
 endif()
 
 set(src
-	vector.cpp
-	color.cpp
-	image.cpp
-	material.cpp
-	object.cpp
-	ray.cpp
-	scene.cpp
-	renderer.cpp
-	light.cpp
+    vector.cpp
+    color.cpp
+    image.cpp
+    material.cpp
+    object.cpp
+    ray.cpp
+    scene.cpp
+    renderer.cpp
+    light.cpp
+    util.cpp
 )
 
 if (CUDA_ENABLED)

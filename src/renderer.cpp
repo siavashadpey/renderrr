@@ -12,13 +12,13 @@ __global__ void set_pixel_color_kernel(Renderer* renderer, int nrow, int ncol) {
 	Point cl = renderer->scene()->camera_location();
 	if ((i < nrow) and (j < ncol)) {
 		Color color;
-		for (int iray = 0; iray < n_samples_; iray++) {
+		for (int iray = 0; iray < renderer->n_samples(); iray++) {
 			Point pixel_loc = renderer->scene()->pixel_location(i, j);
 			Vector3d<float> dir = cl.direction_to(pixel_loc);
 			Ray ray = Ray(cl, dir);
 			color += renderer->trace_ray(ray);
 		}
-		color = color*(1.f/n_samples_);
+		color = color*(1.f/renderer->n_samples());
 		renderer->set_pixel_color(i, j, color);
 	}
 }
@@ -168,6 +168,11 @@ CUDA_CALLABLE void Renderer::set_pixel_color(int irow, int jcol, Color pixel_col
 CUDA_CALLABLE int Renderer::max_rays() const
 {
 	return max_rays_;
+}
+
+CUDA_CALLABLE int Renderer::n_samples() const
+{
+	return n_samples_;
 }
 
 #ifdef __CUDACC__

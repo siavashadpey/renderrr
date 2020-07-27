@@ -3,10 +3,7 @@
 #include <stdio.h>
 
 #include "image.h"
-
-float random_pertubation() {
-	return rand() / (RAND_MAX + 1.f);
-}
+#include "util.h"
 
 Image::Image(int height, int width) 
     : height_(height),
@@ -41,8 +38,8 @@ CUDA_CALLABLE void Image::dimensions(int& nrow, int &ncol) const
 
 CUDA_CALLABLE Point Image::pixel_location(int irow, int jcol) const
 {
-	float x = (float) (jcol + random_pertubation())*dx_;
-	float y = (float) (irow + random_pertubation())*dy_;
+	float x = (float) (jcol + random_unit_float())*dx_;
+	float y = (float) (irow + random_unit_float())*dy_;
 	return Point(x, y, 0.0f);
 }
 
