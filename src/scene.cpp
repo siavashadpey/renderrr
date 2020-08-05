@@ -15,7 +15,7 @@ Scene::Scene(Point camera_location, int n_objects, int n_lights)
 	camera_location_ = camera_location;
 
 	float ar = 16.f/9.f; // aspect ration = width/height
-	int height = 400;
+	int height = 1000;
 	int width = (int)(height*ar);
 	image_ = new Image(height, width);
 
